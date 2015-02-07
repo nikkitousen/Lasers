@@ -19,7 +19,7 @@ public class LaserDrawer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		DrawBeam();
+		DrawBeam(location, direction);
 	}
 	
 	// Update is called once per frame
@@ -27,9 +27,9 @@ public class LaserDrawer : MonoBehaviour {
 	
 	}
 	
-	void DrawBeam() {
-		Direction currentDir = direction;
-		Vector2 currentPos = location;
+	void DrawBeam(Vector2 startPos, Direction startDir) {
+		Direction currentDir = startDir;
+		Vector2 currentPos = startPos;
 		while(true) {
 			Debug.Log(currentDir.ToString() + " " + currentPos.ToString());
 		
