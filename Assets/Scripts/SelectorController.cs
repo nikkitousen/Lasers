@@ -25,8 +25,6 @@ public class SelectorController : MonoBehaviour {
 			mousePos.z = 0;
 			if(!selected && WithinBounds(mousePos)) {
 				SetSelected(true);
-			} else if (selected) {
-				//SetSelected(false);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ using System.Collections;
 public class ManageSelection : MonoBehaviour {
 	
 	public GameObject currentlySelected;
+	public float currentRotation = 0;
 	
 	private SelectorController[] childSelectionController;
 	
@@ -21,7 +22,7 @@ public class ManageSelection : MonoBehaviour {
 	
 	}
 	
-	public void cancelSelection() {
+	public void CancelSelection() {
 		foreach(SelectorController selector in childSelectionController) {
 			selector.SetSelected(false);
 		}
