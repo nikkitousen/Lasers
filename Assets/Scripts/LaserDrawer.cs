@@ -31,7 +31,6 @@ public class LaserDrawer : MonoBehaviour {
 		Direction currentDir = startDir;
 		Vector2 currentPos = startPos;
 		while(true) {
-			Debug.Log(currentDir.ToString() + " " + currentPos.ToString());
 		
 			if(currentPos.x < 0 || currentPos.x >= floorElements.width
 			|| currentPos.y < 0 || currentPos.y >= floorElements.height) {

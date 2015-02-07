@@ -3,12 +3,16 @@ using System.Collections;
 
 public class SelectorController : MonoBehaviour {
 	
+	public GameObject boxPrefab;
+	
 	private bool selected = false;
 	
 	private Transform selectionShadow;
+	private ManageSelection manageSelectionScript;
 	
 	void Awake () {
 		selectionShadow = transform.FindChild("SelectionShadow");
+		manageSelectionScript = GetComponentInParent<ManageSelection>();
 	}
 	
 	void Start () {
@@ -22,14 +26,17 @@ public class SelectorController : MonoBehaviour {
 			if(!selected && WithinBounds(mousePos)) {
 				SetSelected(true);
 			} else if (selected) {
-				SetSelected(false);
+				//SetSelected(false);
 			}
 		}
 	}
 	
-	void SetSelected(bool b) {
+	public void SetSelected(bool b) {
 		selected = b;
 		selectionShadow.gameObject.renderer.enabled = b;	
+		if(b) {
+			manageSelectionScript.currentlySelected = boxPrefab;
+		} else manageSelectionScript.currentlySelected = null;
 	}
 	
 	bool WithinBounds(Vector3 pos) {
