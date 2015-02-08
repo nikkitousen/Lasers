@@ -17,6 +17,8 @@ public class LaserDrawer : MonoBehaviour {
 	private Stack<GameObject> longBeamPool = new Stack<GameObject>();
 	private Stack<GameObject> shortBeamPool = new Stack<GameObject>();
 	
+	private List<GameObject> targetsReached = new List<GameObject>();
+	
 	void Awake () {
 		floorElements = GameObject.Find("Floor").GetComponent<FloorElements>();
 	}
@@ -49,6 +51,11 @@ public class LaserDrawer : MonoBehaviour {
 				shortBeamPool.Push(beam);
 			}
 			currentShortBeams = new List<GameObject>();
+			
+			foreach(GameObject target in targetsReached) {
+				target.GetComponent<ToggleTarget>().RemoveLaser();
+			}
+			targetsReached = new List<GameObject>();
 				
 		}
 		
@@ -141,7 +148,13 @@ public class LaserDrawer : MonoBehaviour {
 					float boxRotation = floorElements.gridRotation[(int)currentPos.x, (int)currentPos.y];
 					
 					// Now we need to spawn the other beams, if any, and end the function
-					if(currentTile == "Box2") {
+					
+					if(currentTile == "Target") {
+						Debug.Log("Reached a target");
+						GameObject tileTargetObj = floorElements.gridObjects[(int)currentPos.x, (int)currentPos.y];
+						tileTargetObj.GetComponent<ToggleTarget>().AddLaser();
+						targetsReached.Add(tileTargetObj);
+					} if(currentTile == "Box2") {
 						if(currentDir == Direction.Right) {
 							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Up, true);
 							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Down, true);

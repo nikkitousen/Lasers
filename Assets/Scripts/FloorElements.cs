@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 
 public class FloorElements : MonoBehaviour {
-	
-//	public enum TileType { Empty, Dark, Box }; 
 			
 	public int width;
 	public int height;
 	
-//	public TileType[,] grid;
 	public string[,] grid;
 	public float[,] gridRotation;
+	public GameObject[,] gridObjects;
 	
 	private ManageSelection selectionManager;
 	private List<LaserDrawer> laserDrawers = new List<LaserDrawer>();
@@ -27,17 +25,21 @@ public class FloorElements : MonoBehaviour {
 	void Start () {
 		grid = new string[width,height];
 		gridRotation = new float[width,height];
+		gridObjects = new GameObject[width,height];
+		
 		foreach(Transform child in transform) {
 			int gridX = (int) (child.position.x / 4);
 			int gridY = (int) (child.position.y / 4);
-			if(child.name == "Tile") {
+			if(child.tag == "TileEmpty") {
 				grid[gridX, gridY] = "Empty";
 				gridRotation[gridX, gridY] = 0f;
+			} else if (child.tag == "TileTarget") {
+				grid[gridX, gridY] = "Target";
+				gridObjects[gridX, gridY] = child.gameObject;
 			}
 		}
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		if(Input.GetMouseButtonDown(0)) {
 			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

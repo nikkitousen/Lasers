@@ -6,6 +6,7 @@ public class SelectorController : MonoBehaviour {
 	public GameObject boxPrefab;
 	
 	private bool selected = false;
+	private float currentRotation = 0f;
 	
 	private Transform selectionShadow;
 	private ManageSelection manageSelectionScript;
@@ -25,8 +26,19 @@ public class SelectorController : MonoBehaviour {
 			mousePos.z = 0;
 			if(!selected && WithinBounds(mousePos)) {
 				SetSelected(true);
+			} else if (selected && WithinBounds(mousePos)) {
+				currentRotation -= 90f;
+				if(currentRotation == -90f) currentRotation = 270f;
+				//transform.rotation = Quaternion.Euler(0, 0, currentRotation);
+				manageSelectionScript.currentRotation = currentRotation;
 			}
 		}
+		
+		transform.rotation = Quaternion.Slerp(transform.rotation,
+											  Quaternion.Euler(0, 0, currentRotation),
+											  5f * Time.deltaTime);
+		selectionShadow.transform.rotation = Quaternion.identity;
+		
 	}
 	
 	public void SetSelected(bool b) {
@@ -34,7 +46,11 @@ public class SelectorController : MonoBehaviour {
 		selectionShadow.gameObject.renderer.enabled = b;	
 		if(b) {
 			manageSelectionScript.currentlySelected = boxPrefab;
-		} else manageSelectionScript.currentlySelected = null;
+		} else {
+			manageSelectionScript.currentlySelected = null;
+		}
+		currentRotation = 0f;
+		transform.rotation = Quaternion.Euler(0, 0, 0);
 	}
 	
 	bool WithinBounds(Vector3 pos) {
