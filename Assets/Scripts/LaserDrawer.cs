@@ -34,8 +34,6 @@ public class LaserDrawer : MonoBehaviour {
 	}
 	
 	public void DrawBeam(Vector2 startPos, Direction startDir, bool startFromBox = false) {
-		
-		
 		if(!startFromBox) {
 			// I should erase the previous laser
 			foreach(GameObject beam in currentLongBeams){
@@ -99,6 +97,8 @@ public class LaserDrawer : MonoBehaviour {
 						break;
 				}
 			} else {
+				Debug.Log("trying to access " + currentPos.ToString());
+				Debug.Log(floorElements.grid);
 				string currentTile = floorElements.grid[(int)currentPos.x, (int)currentPos.y];
 				
 				if(currentTile == "Solid") {
@@ -154,24 +154,34 @@ public class LaserDrawer : MonoBehaviour {
 						GameObject tileTargetObj = floorElements.gridObjects[(int)currentPos.x, (int)currentPos.y];
 						tileTargetObj.GetComponent<ToggleTarget>().AddLaser();
 						targetsReached.Add(tileTargetObj);
-					} if(currentTile == "Box2") {
-						if(currentDir == Direction.Right) {
-							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Up, true);
-							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Down, true);
+					} else {
+						List<Direction> directionsToSpawn = getOutputDirections(currentDir, currentTile, boxRotation);
+						foreach(Direction dir in directionsToSpawn) {
+							DrawBeam(currentPos, dir, true);
 						}
-						if(currentDir == Direction.Down) {
-							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Left, true);
-							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Right, true);
-						}
-						if(currentDir == Direction.Left) {
-							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Down, true);
-							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Up, true);
-						}
-						if(currentDir == Direction.Up) {
-							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Right, true);
-							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Left, true);
-						}
+						
+						
 					}
+//					} else if(currentTile == "Box2") {
+//						if(currentDir == Direction.Right) {
+//							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Up, true);
+//							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Down, true);
+//						}
+//						if(currentDir == Direction.Down) {
+//							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Left, true);
+//							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Right, true);
+//						}
+//						if(currentDir == Direction.Left) {
+//							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Down, true);
+//							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Up, true);
+//						}
+//						if(currentDir == Direction.Up) {
+//							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Right, true);
+//							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Left, true);
+//						}
+//					} else if(currentTile == "Box3") {
+//						
+//					}
 					
 					break;
 				}
@@ -187,5 +197,77 @@ public class LaserDrawer : MonoBehaviour {
 				currentPos.x += 1f;
 			}
 		}
+	}
+	
+	List<Direction> getOutputDirections(Direction inDir, string boxType, float boxRotation) {
+		
+		List<Direction> results = new List<Direction>();
+		
+		// Let's see if we add "UP"
+		if(inDir != Direction.Down) {
+			if(boxType == "Box2") {
+				if((boxRotation == 0f && inDir == Direction.Right)
+				|| (boxRotation == 270f && inDir == Direction.Left))
+					results.Add(Direction.Up);
+			} else if(boxType == "Box3") {
+				if((boxRotation == 0f && inDir != Direction.Up)
+				|| (boxRotation == 90f && inDir != Direction.Left)
+				|| (boxRotation == 270f && inDir != Direction.Right))
+					results.Add(Direction.Up);
+			} else if(boxType == "Box4") {
+				results.Add(Direction.Up);
+			}
+		}
+		
+		// Let's see if we add "DOWN"
+		if(inDir != Direction.Up) {
+			if(boxType == "Box2") {
+				if((boxRotation == 90f && inDir == Direction.Right)
+				|| (boxRotation == 180f && inDir == Direction.Left))
+					results.Add(Direction.Down);
+			} else if(boxType == "Box3") {
+				if((boxRotation == 180f && inDir != Direction.Down)
+				|| (boxRotation == 90f && inDir != Direction.Left)
+				|| (boxRotation == 270f && inDir != Direction.Right))
+					results.Add(Direction.Down);
+			} else if(boxType == "Box4") {
+				results.Add(Direction.Down);
+			}
+		}
+		
+		// Let's see if we add "LEFT"
+		if(inDir != Direction.Right) {
+			if(boxType == "Box2") {
+				if((boxRotation == 0f && inDir == Direction.Down)
+			    || (boxRotation == 90f && inDir == Direction.Up))
+					results.Add(Direction.Left);
+			} else if(boxType == "Box3") {
+				if((boxRotation == 0f && inDir != Direction.Up)
+				|| (boxRotation == 90f && inDir != Direction.Left)
+				|| (boxRotation == 180f && inDir != Direction.Down))
+					results.Add(Direction.Left);
+			} else if(boxType == "Box4") {
+				results.Add(Direction.Left);
+			}
+		}
+		
+		// Let's see if we add "RIGHT"
+		if(inDir != Direction.Left) {
+			if(boxType == "Box2") {
+				if((boxRotation == 180f && inDir == Direction.Up)
+				|| (boxRotation == 270f && inDir == Direction.Down))
+					results.Add(Direction.Right);
+			} else if(boxType == "Box3") {
+				if((boxRotation == 0f && inDir != Direction.Up)
+				|| (boxRotation == 270f && inDir != Direction.Right)
+				|| (boxRotation == 180f && inDir != Direction.Down))
+					results.Add(Direction.Right);
+			} else if(boxType == "Box4") {
+				results.Add(Direction.Right);
+			}
+		}
+		
+		return results;
+		
 	}
 }

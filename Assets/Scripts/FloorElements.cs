@@ -20,10 +20,12 @@ public class FloorElements : MonoBehaviour {
 			laserDrawers.Add(obj.GetComponent<LaserDrawer>());
 		}
 		Debug.Log("Drawers = " + laserDrawers.Count.ToString());
-	}
-	
-	void Start () {
-		grid = new string[width,height];
+		
+		
+		// I need to do this in Awake and NOT in Start, since the Start function
+		// of the lasers needs it
+		
+		grid = new string[width,height]; 
 		gridRotation = new float[width,height];
 		gridObjects = new GameObject[width,height];
 		
@@ -40,6 +42,10 @@ public class FloorElements : MonoBehaviour {
 		}
 	}
 	
+	void Start () {
+		
+	}
+	
 	void Update () {
 		if(Input.GetMouseButtonDown(0)) {
 			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -51,7 +57,7 @@ public class FloorElements : MonoBehaviour {
 				
 				Debug.Log(gridPosX.ToString() + " " + gridPosY.ToString());
 				
-				if(selectionManager.currentlySelected != null) {
+				if(selectionManager.currentlySelected != null && grid[gridPosX,gridPosY] == "Empty") {
 					grid[gridPosX,gridPosY] = selectionManager.currentlySelected.name;
 					gridRotation[gridPosX,gridPosY] = selectionManager.currentRotation;
 					
