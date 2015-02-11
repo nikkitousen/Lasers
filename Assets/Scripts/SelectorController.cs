@@ -25,6 +25,7 @@ public class SelectorController : MonoBehaviour {
 			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			mousePos.z = 0;
 			if(!selected && WithinBounds(mousePos)) {
+				manageSelectionScript.CancelSelection();
 				SetSelected(true);
 			} else if (selected && WithinBounds(mousePos)) {
 				currentRotation -= 90f;

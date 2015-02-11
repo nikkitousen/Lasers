@@ -5,6 +5,7 @@ public class FloorElements : MonoBehaviour {
 			
 	public int width;
 	public int height;
+	public float tileSideLength;
 	
 	public string[,] grid;
 	public float[,] gridRotation;
@@ -30,16 +31,19 @@ public class FloorElements : MonoBehaviour {
 		gridObjects = new GameObject[width,height];
 		
 		foreach(Transform child in transform) {
-			int gridX = (int) (child.position.x / 4);
-			int gridY = (int) (child.position.y / 4);
+			int gridX = (int) (child.localPosition.x / tileSideLength);
+			int gridY = (int) (child.localPosition.y / tileSideLength);
 			if(child.tag == "TileEmpty") {
 				grid[gridX, gridY] = "Empty";
-				gridRotation[gridX, gridY] = 0f;
+			} else if (child.tag == "TileSolid") {
+				grid[gridX, gridY] = "Solid";
 			} else if (child.tag == "TileTarget") {
 				grid[gridX, gridY] = "Target";
 				gridObjects[gridX, gridY] = child.gameObject;
 			}
 		}
+		
+		Debug.Log("The scale is " + transform.localScale.ToString());
 	}
 	
 	void Start () {
@@ -47,23 +51,31 @@ public class FloorElements : MonoBehaviour {
 	}
 	
 	void Update () {
+		float calculatedTileLength = tileSideLength * transform.localScale.x; // assumes tiles to be squares
+		float minX = -calculatedTileLength/2f;
+		float maxX = width * calculatedTileLength - calculatedTileLength/2f;
+		float minY = -calculatedTileLength/2f;
+		float maxY = height * calculatedTileLength - calculatedTileLength/2f;
+	
 		if(Input.GetMouseButtonDown(0)) {
 			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			
-			if(mousePos.x > -2f && mousePos.x < width * 4f - 2f
-			&& mousePos.y > -2f && mousePos.y < height * 4f - 2f) {
-				int gridPosX = (int)((mousePos.x+2f)/4f);
-				int gridPosY = (int)((mousePos.y+2f)/4f);
+			if(mousePos.x > minX && mousePos.x < maxX
+			&& mousePos.y > minY && mousePos.y < maxY) {
+				int gridPosX = (int)((mousePos.x+calculatedTileLength/2f)/calculatedTileLength);
+				int gridPosY = (int)((mousePos.y+calculatedTileLength/2f)/calculatedTileLength);
 				
-				Debug.Log(gridPosX.ToString() + " " + gridPosY.ToString());
+				Debug.Log("Clicked on tile " + gridPosX.ToString() + " " + gridPosY.ToString());
 				
 				if(selectionManager.currentlySelected != null && grid[gridPosX,gridPosY] == "Empty") {
 					grid[gridPosX,gridPosY] = selectionManager.currentlySelected.name;
 					gridRotation[gridPosX,gridPosY] = selectionManager.currentRotation;
 					
 					GameObject newBox = Instantiate(selectionManager.currentlySelected) as GameObject;
-					newBox.transform.position = new Vector2(gridPosX * 4f, gridPosY * 4f);
-					newBox.transform.rotation = Quaternion.Euler(0,0,selectionManager.currentRotation);
+					newBox.transform.parent = transform;
+					newBox.transform.localScale = Vector3.one;
+					newBox.transform.localPosition = new Vector2(gridPosX * tileSideLength, gridPosY * tileSideLength);
+					newBox.transform.localRotation = Quaternion.Euler(0,0,selectionManager.currentRotation);
 					
 					
 					foreach(LaserDrawer drawer in laserDrawers) {

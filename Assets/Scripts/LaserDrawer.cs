@@ -73,27 +73,29 @@ public class LaserDrawer : MonoBehaviour {
 			if(startFromBox && currentPos == startPos) {
 				if(shortBeamPool.Count == 0) {
 					newBeam = Instantiate(shortBeam) as GameObject;
+					newBeam.transform.parent = transform;
+					newBeam.transform.localScale = Vector3.one;
 				} else {
 					newBeam = shortBeamPool.Pop();
 					newBeam.renderer.enabled = true;
 				}
 				currentShortBeams.Add(newBeam);
 				
-				newBeam.transform.position = currentPos * 4f;
+				newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
 				
 				// The beam is "leaving" the box
 				switch(currentDir) {
 					case Direction.Down:
-						newBeam.transform.rotation = Quaternion.Euler(0, 0, 90);
+						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 90);
 						break;
 					case Direction.Right:
-						newBeam.transform.rotation = Quaternion.Euler(0, 0, 180);
+						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 180);
 						break;
 					case Direction.Up:
-						newBeam.transform.rotation = Quaternion.Euler(0, 0, 270);
+						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 270);
 						break;
 					default:
-						newBeam.transform.rotation = Quaternion.Euler(0, 0, 0);
+						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 0);
 						break;
 				}
 			} else {
@@ -104,9 +106,10 @@ public class LaserDrawer : MonoBehaviour {
 				if(currentTile == "Solid") {
 					break;
 				} else if(currentTile == "Empty") {
-					//newBeam = Instantiate(longBeam) as GameObject;
 					if(longBeamPool.Count == 0) {
 						newBeam = Instantiate(longBeam) as GameObject;
+						newBeam.transform.parent = transform;
+						newBeam.transform.localScale = Vector3.one;
 					} else {
 						newBeam = longBeamPool.Pop();
 						newBeam.renderer.enabled = true;
@@ -114,34 +117,38 @@ public class LaserDrawer : MonoBehaviour {
 					currentLongBeams.Add(newBeam);
 					
 					
-					newBeam.transform.position = currentPos * 4f;
+					newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
+					
 					if(currentDir == Direction.Up || currentDir == Direction.Down) {
-						newBeam.transform.rotation = Quaternion.Euler(0, 0, 90);
+						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 90);
 					}
 				} else {
 					// It's a box!
 					if(shortBeamPool.Count == 0) {
 						newBeam = Instantiate(shortBeam) as GameObject;
+						newBeam.transform.parent = transform;
+						newBeam.transform.localScale = Vector3.one;
 					} else {
 						newBeam = shortBeamPool.Pop();
 						newBeam.renderer.enabled = true;
 					}
 					currentShortBeams.Add(newBeam);
-					newBeam.transform.position = currentPos * 4f;
+					
+					newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
 					
 					// The beam is "entering" the box
 					switch(currentDir) {
 						case Direction.Down:
-							newBeam.transform.rotation = Quaternion.Euler(0, 0, 270);
+							newBeam.transform.localRotation = Quaternion.Euler(0, 0, 270);
 							break;
 						case Direction.Right:
-							newBeam.transform.rotation = Quaternion.Euler(0, 0, 0);
+							newBeam.transform.localRotation = Quaternion.Euler(0, 0, 0);
 							break;
 						case Direction.Up:
-							newBeam.transform.rotation = Quaternion.Euler(0, 0, 90);
+							newBeam.transform.localRotation = Quaternion.Euler(0, 0, 90);
 							break;
 						default:
-							newBeam.transform.rotation = Quaternion.Euler(0, 0, 180);
+							newBeam.transform.localRotation = Quaternion.Euler(0, 0, 180);
 							break;
 					}
 					
@@ -150,7 +157,7 @@ public class LaserDrawer : MonoBehaviour {
 					// Now we need to spawn the other beams, if any, and end the function
 					
 					if(currentTile == "Target") {
-						Debug.Log("Reached a target");
+						//Debug.Log("Reached a target");
 						GameObject tileTargetObj = floorElements.gridObjects[(int)currentPos.x, (int)currentPos.y];
 						tileTargetObj.GetComponent<ToggleTarget>().AddLaser();
 						targetsReached.Add(tileTargetObj);
@@ -158,30 +165,8 @@ public class LaserDrawer : MonoBehaviour {
 						List<Direction> directionsToSpawn = getOutputDirections(currentDir, currentTile, boxRotation);
 						foreach(Direction dir in directionsToSpawn) {
 							DrawBeam(currentPos, dir, true);
-						}
-						
-						
+						}	
 					}
-//					} else if(currentTile == "Box2") {
-//						if(currentDir == Direction.Right) {
-//							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Up, true);
-//							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Down, true);
-//						}
-//						if(currentDir == Direction.Down) {
-//							if(boxRotation == 0f) DrawBeam(currentPos, Direction.Left, true);
-//							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Right, true);
-//						}
-//						if(currentDir == Direction.Left) {
-//							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Down, true);
-//							if(boxRotation == 270f) DrawBeam(currentPos, Direction.Up, true);
-//						}
-//						if(currentDir == Direction.Up) {
-//							if(boxRotation == 180f) DrawBeam(currentPos, Direction.Right, true);
-//							if(boxRotation == 90f) DrawBeam(currentPos, Direction.Left, true);
-//						}
-//					} else if(currentTile == "Box3") {
-//						
-//					}
 					
 					break;
 				}
@@ -268,6 +253,5 @@ public class LaserDrawer : MonoBehaviour {
 		}
 		
 		return results;
-		
 	}
 }
