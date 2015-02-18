@@ -10,7 +10,7 @@ public class LaserDrawer : MonoBehaviour {
 	public GameObject longBeam;
 	public GameObject shortBeam;
 	
-	private FloorElements floorElements;
+	private FloorManager floorManagerScript;
 	
 	private List<GameObject> currentLongBeams = new List<GameObject>();
 	private List<GameObject> currentShortBeams = new List<GameObject>();
@@ -20,17 +20,11 @@ public class LaserDrawer : MonoBehaviour {
 	private List<GameObject> targetsReached = new List<GameObject>();
 	
 	void Awake () {
-		floorElements = GameObject.Find("Floor").GetComponent<FloorElements>();
+		floorManagerScript = GameObject.Find("Floor").GetComponent<FloorManager>();
 	}
 
-	// Use this for initialization
 	void Start () {
-		DrawBeam(location, direction);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		DrawBeam(location, direction); // not to be called in "Awake", otherwise will mess with the construction of grid
 	}
 	
 	public void DrawBeam(Vector2 startPos, Direction startDir, bool startFromBox = false) {
@@ -56,15 +50,13 @@ public class LaserDrawer : MonoBehaviour {
 			targetsReached = new List<GameObject>();
 				
 		}
-		
-		Debug.Log("Draw Laser at " + startPos.ToString() + ", " + startFromBox.ToString());
 	
 		Vector2 currentPos = startPos;
 		Direction currentDir = startDir;
 		while(true) {
 		
-			if(currentPos.x < 0 || currentPos.x >= floorElements.width
-			|| currentPos.y < 0 || currentPos.y >= floorElements.height) {
+			if(currentPos.x < 0 || currentPos.x >= floorManagerScript.width
+			|| currentPos.y < 0 || currentPos.y >= floorManagerScript.height) {
 				break;
 			}
 			
@@ -81,7 +73,7 @@ public class LaserDrawer : MonoBehaviour {
 				}
 				currentShortBeams.Add(newBeam);
 				
-				newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
+				newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
 				
 				// The beam is "leaving" the box
 				switch(currentDir) {
@@ -99,9 +91,7 @@ public class LaserDrawer : MonoBehaviour {
 						break;
 				}
 			} else {
-				Debug.Log("trying to access " + currentPos.ToString());
-				Debug.Log(floorElements.grid);
-				string currentTile = floorElements.grid[(int)currentPos.x, (int)currentPos.y];
+				string currentTile = floorManagerScript.grid[(int)currentPos.x, (int)currentPos.y];
 				
 				if(currentTile == "Solid") {
 					break;
@@ -117,7 +107,7 @@ public class LaserDrawer : MonoBehaviour {
 					currentLongBeams.Add(newBeam);
 					
 					
-					newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
+					newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
 					
 					if(currentDir == Direction.Up || currentDir == Direction.Down) {
 						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 90);
@@ -134,7 +124,7 @@ public class LaserDrawer : MonoBehaviour {
 					}
 					currentShortBeams.Add(newBeam);
 					
-					newBeam.transform.localPosition = currentPos * floorElements.tileSideLength;
+					newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
 					
 					// The beam is "entering" the box
 					switch(currentDir) {
@@ -152,13 +142,12 @@ public class LaserDrawer : MonoBehaviour {
 							break;
 					}
 					
-					float boxRotation = floorElements.gridRotation[(int)currentPos.x, (int)currentPos.y];
+					float boxRotation = floorManagerScript.gridRotation[(int)currentPos.x, (int)currentPos.y];
 					
 					// Now we need to spawn the other beams, if any, and end the function
 					
 					if(currentTile == "Target") {
-						//Debug.Log("Reached a target");
-						GameObject tileTargetObj = floorElements.gridObjects[(int)currentPos.x, (int)currentPos.y];
+						GameObject tileTargetObj = floorManagerScript.gridObjects[(int)currentPos.x, (int)currentPos.y];
 						tileTargetObj.GetComponent<ToggleTarget>().AddLaser();
 						targetsReached.Add(tileTargetObj);
 					} else {

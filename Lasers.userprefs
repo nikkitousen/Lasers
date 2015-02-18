@@ -2,13 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/SelectorController.cs">
     <Files>
-      <File FileName="Assets/Scripts/ManageSelection.cs" Line="23" Column="3" />
-      <File FileName="../Mosquitos/Assets/Scripts/CannonController.cs" Line="1" Column="1" />
-      <File FileName="../ZombieConga/Assets/Scripts/ZombieController.cs" Line="47" Column="33" />
-      <File FileName="Assets/Scripts/SelectorController.cs" Line="23" Column="2" />
-      <File FileName="Assets/Scripts/FloorElements.cs" Line="38" Column="50" />
-      <File FileName="Assets/Scripts/ToggleTarget.cs" Line="20" Column="9" />
-      <File FileName="Assets/Scripts/LaserDrawer.cs" Line="95" Column="56" />
+      <File FileName="Assets/Scripts/SelectorController.cs" Line="15" Column="43" />
+      <File FileName="Assets/Scripts/LaserDrawer.cs" Line="23" Column="74" />
+      <File FileName="Assets/Scripts/ToggleTarget.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/TileClickController.cs" Line="11" Column="73" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

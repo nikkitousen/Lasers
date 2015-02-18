@@ -46,11 +46,13 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\FloorElements.cs" />
+     <Compile Include="Assets\Scripts\FloorManager.cs" />
      <Compile Include="Assets\Scripts\LaserDrawer.cs" />
-     <Compile Include="Assets\Scripts\ManageSelection.cs" />
      <Compile Include="Assets\Scripts\SelectorController.cs" />
+     <Compile Include="Assets\Scripts\TileClickController.cs" />
      <Compile Include="Assets\Scripts\ToggleTarget.cs" />
+     <None Include="Assets\Fonts\hyperspace\Font License.txt.txt" />
+     <None Include="Assets\Fonts\olney\freeware_eula.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/4.6.2/UnityEngine.UI.dll</HintPath>
  </Reference>

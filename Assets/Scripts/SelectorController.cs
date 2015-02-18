@@ -3,61 +3,74 @@ using System.Collections;
 
 public class SelectorController : MonoBehaviour {
 	
+	public int boxCount;
 	public GameObject boxPrefab;
+	public float currentRotation = 0f;
 	
 	private bool selected = false;
-	private float currentRotation = 0f;
 	
+	private Transform boxSprite;
 	private Transform selectionShadow;
-	private ManageSelection manageSelectionScript;
+	private FloorManager floorManagerScript;
+	private TextMesh boxCountMesh;
 	
 	void Awake () {
+		boxSprite = transform.FindChild("BoxSprite");
 		selectionShadow = transform.FindChild("SelectionShadow");
-		manageSelectionScript = GetComponentInParent<ManageSelection>();
+
+		boxCountMesh = transform.FindChild("BoxCounter").GetComponent<TextMesh>();
+		floorManagerScript = GameObject.Find("Floor").GetComponent<FloorManager>();
 	}
 	
 	void Start () {
 		SetSelected(false);
+		SetCounter(boxCount);
 	}
 	
-	void Update () {
-		if(Input.GetMouseButtonDown(0)) {
-			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			mousePos.z = 0;
-			if(!selected && WithinBounds(mousePos)) {
-				manageSelectionScript.CancelSelection();
-				SetSelected(true);
-			} else if (selected && WithinBounds(mousePos)) {
-				currentRotation -= 90f;
-				if(currentRotation == -90f) currentRotation = 270f;
-				//transform.rotation = Quaternion.Euler(0, 0, currentRotation);
-				manageSelectionScript.currentRotation = currentRotation;
-			}
+	void OnMouseDown() {
+		if(!selected) {
+			SetSelected(true);
+		} else if (selected) {
+			currentRotation -= 90f;
+			if(currentRotation == -90f) currentRotation = 270f;
 		}
-		
-		transform.rotation = Quaternion.Slerp(transform.rotation,
-											  Quaternion.Euler(0, 0, currentRotation),
-											  5f * Time.deltaTime);
-		selectionShadow.transform.rotation = Quaternion.identity;
-		
+	}
+	
+	void Update () {		
+		boxSprite.transform.rotation = Quaternion.Slerp(boxSprite.transform.rotation,
+											  			Quaternion.Euler(0, 0, currentRotation),
+											  			5f * Time.deltaTime);
 	}
 	
 	public void SetSelected(bool b) {
+		if(b && boxCount == 0) return;
 		selected = b;
 		selectionShadow.gameObject.renderer.enabled = b;	
 		if(b) {
-			manageSelectionScript.currentlySelected = boxPrefab;
+			if(floorManagerScript.currentlySelectedScript != null)
+				floorManagerScript.currentlySelectedScript.SetSelected(false);
+			floorManagerScript.currentlySelectedScript = this;
 		} else {
-			manageSelectionScript.currentlySelected = null;
+			floorManagerScript.currentlySelectedScript = null;
 		}
 		currentRotation = 0f;
-		transform.rotation = Quaternion.Euler(0, 0, 0);
+		boxSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
 	}
 	
-	bool WithinBounds(Vector3 pos) {
-		return pos.x >= transform.position.x-2f
-			&& pos.x <= transform.position.x+2f
-			&& pos.y >= transform.position.y-2f
-			&& pos.y <= transform.position.y+2f;
+	public void SetCounter(int count) {
+		boxCountMesh.text = "x" + count.ToString();
+		if(boxCount == 0 && count != 0){
+			Color newColor = boxSprite.GetComponent<SpriteRenderer>().color;
+			newColor.a = 1f;
+			boxSprite.GetComponent<SpriteRenderer>().color = newColor;
+		}
+		
+		boxCount = count;
+		
+		if(boxCount == 0) {
+			Color newColor = boxSprite.GetComponent<SpriteRenderer>().color;
+			newColor.a = 0.25f;
+			boxSprite.GetComponent<SpriteRenderer>().color = newColor;
+		}
 	}
 }
