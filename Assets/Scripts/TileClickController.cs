@@ -11,14 +11,9 @@ public class TileClickController : MonoBehaviour {
 		floorManagerScript = GameObject.Find("Floor").GetComponent<FloorManager>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	
 	void OnMouseDown() {
-		Debug.Log("clicked!");
-		if(floorManagerScript.currentlySelectedScript != null) {
+		if(floorManagerScript.currentlySelectedScript != null
+		&& floorManagerScript.grid[x,y] == "Empty") {
 			floorManagerScript.PlaceCurrenlySelectedBox(x, y);
 		}
 	}

@@ -12,18 +12,12 @@ public class ToggleTarget : MonoBehaviour {
 		yellowTransform = transform.FindChild("TargetYellow");
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	
 	public void AddLaser() {
 		if(lasersIn == 0) {
 			// We need to turn on the green light
 			yellowTransform.renderer.enabled = false;
 			greenTransform.renderer.enabled = true;
 		}
-		
 		lasersIn += 1;
 	}
 	

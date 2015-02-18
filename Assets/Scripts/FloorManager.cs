@@ -14,10 +14,12 @@ public class FloorManager : MonoBehaviour {
 	public SelectorController currentlySelectedScript;
 	
 	private Transform tiles;
+	private Transform elements;
 	private List<LaserDrawer> laserDrawers = new List<LaserDrawer>();
 	
 	void Awake () {
 		tiles = transform.FindChild("Tiles");
+		elements = transform.FindChild("Elements");
 		GameObject[] laserObjects = GameObject.FindGameObjectsWithTag("Laser");
 		foreach(GameObject obj in laserObjects) {
 			laserDrawers.Add(obj.GetComponent<LaserDrawer>());
@@ -49,7 +51,6 @@ public class FloorManager : MonoBehaviour {
 	
 	
 	public void PlaceCurrenlySelectedBox(int x, int y) {
-		
 		if(currentlySelectedScript == null) return;
 		
 		GameObject prefab = currentlySelectedScript.boxPrefab;
@@ -60,7 +61,7 @@ public class FloorManager : MonoBehaviour {
 		gridRotation[x,y] = rotation;
 		
 		GameObject newBox = Instantiate(prefab) as GameObject;
-		newBox.transform.parent = transform;
+		newBox.transform.parent = elements;
 		newBox.transform.localScale = Vector3.one;
 		newBox.transform.localPosition = new Vector2(x * tileSideLength, y * tileSideLength);
 		newBox.transform.localRotation = Quaternion.Euler(0,0,rotation);
