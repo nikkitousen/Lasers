@@ -43,10 +43,10 @@
 -define:ENABLE_PROFILER
 -define:UNITY_EDITOR
 -define:UNITY_EDITOR_OSX
-'Assets/Scripts/FloorElements.cs'
+'Assets/Scripts/FloorManager.cs'
 'Assets/Scripts/LaserDrawer.cs'
-'Assets/Scripts/ManageSelection.cs'
 'Assets/Scripts/SelectorController.cs'
+'Assets/Scripts/TileClickController.cs'
 'Assets/Scripts/ToggleTarget.cs'
 -r:'/Applications/Unity/Unity.app/Contents/Frameworks/Mono/lib/mono/unity/System.Runtime.Serialization.dll'
 -r:'/Applications/Unity/Unity.app/Contents/Frameworks/Mono/lib/mono/unity/System.Xml.Linq.dll'

@@ -17,6 +17,9 @@ public class FloorManager : MonoBehaviour {
 	private Transform elements;
 	private List<LaserDrawer> laserDrawers = new List<LaserDrawer>();
 	
+	private int targetsReached;
+	private int totalTargets;
+	
 	void Awake () {
 		tiles = transform.FindChild("Tiles");
 		elements = transform.FindChild("Elements");
@@ -45,8 +48,11 @@ public class FloorManager : MonoBehaviour {
 			} else if (tile.tag == "TileTarget") {
 				grid[gridX, gridY] = "Target";
 				gridObjects[gridX, gridY] = tile.gameObject;
+				totalTargets += 1;
 			}
 		}
+		
+		targetsReached = 0;
 	}
 	
 	
@@ -73,4 +79,16 @@ public class FloorManager : MonoBehaviour {
 			drawer.DrawBeam(drawer.location, drawer.direction);
 		}
 	}
+	
+	public void MarkTargetAsReached() {
+		targetsReached += 1;
+		if(targetsReached == totalTargets) {
+			Debug.Log("Level complete!");
+		}
+	}
+	
+	public void UnmarkTargetAsReached() {
+		targetsReached -= 1;
+	}
+	
 }

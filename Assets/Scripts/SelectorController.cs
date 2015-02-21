@@ -59,6 +59,7 @@ public class SelectorController : MonoBehaviour {
 	
 	public void SetCounter(int count) {
 		boxCountMesh.text = "x" + count.ToString();
+		
 		if(boxCount == 0 && count != 0){
 			Color newColor = boxSprite.GetComponent<SpriteRenderer>().color;
 			newColor.a = 1f;

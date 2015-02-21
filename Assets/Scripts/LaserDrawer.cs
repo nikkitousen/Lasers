@@ -10,6 +10,8 @@ public class LaserDrawer : MonoBehaviour {
 	public GameObject longBeam;
 	public GameObject shortBeam;
 	
+	private Transform spawn;
+	
 	private FloorManager floorManagerScript;
 	
 	private List<GameObject> currentLongBeams = new List<GameObject>();
@@ -21,13 +23,32 @@ public class LaserDrawer : MonoBehaviour {
 	
 	void Awake () {
 		floorManagerScript = GameObject.Find("Floor").GetComponent<FloorManager>();
+		spawn = transform.FindChild("Spawn");
 	}
 
 	void Start () {
-		DrawBeam(location, direction); // not to be called in "Awake", otherwise will mess with the construction of grid
+		location = transform.localPosition/4f;
+		switch((int)spawn.eulerAngles.z) {
+			case 90:
+				direction = Direction.Up;
+				break;
+			case 180:
+				direction = Direction.Left;
+				break;
+			case 270:
+				direction = Direction.Down;
+				break;
+			default:
+				direction = Direction.Right;
+				break;
+		}
+	
+		DrawBeam(Vector2.zero, direction); // not to be called in "Awake", otherwise will mess with the construction of grid
 	}
 	
 	public void DrawBeam(Vector2 startPos, Direction startDir, bool startFromBox = false) {
+	// startPos is the position wrt the laser origin, i.e. always starts at (0,0)
+	
 		if(!startFromBox) {
 			// I should erase the previous laser
 			foreach(GameObject beam in currentLongBeams){
@@ -51,18 +72,20 @@ public class LaserDrawer : MonoBehaviour {
 				
 		}
 	
-		Vector2 currentPos = startPos;
+		Vector2 currentLocalPos = startPos;
 		Direction currentDir = startDir;
 		while(true) {
+			
+			Vector2 currentGridPos = currentLocalPos + location;
 		
-			if(currentPos.x < 0 || currentPos.x >= floorManagerScript.width
-			|| currentPos.y < 0 || currentPos.y >= floorManagerScript.height) {
+			if(currentGridPos.x < 0 || currentGridPos.x >= floorManagerScript.width
+			|| currentGridPos.y < 0 || currentGridPos.y >= floorManagerScript.height) {
 				break;
 			}
 			
 			GameObject newBeam = null;
 			
-			if(startFromBox && currentPos == startPos) {
+			if(startFromBox && currentLocalPos == startPos) {
 				if(shortBeamPool.Count == 0) {
 					newBeam = Instantiate(shortBeam) as GameObject;
 					newBeam.transform.parent = transform;
@@ -73,7 +96,7 @@ public class LaserDrawer : MonoBehaviour {
 				}
 				currentShortBeams.Add(newBeam);
 				
-				newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
+				newBeam.transform.localPosition = currentLocalPos * floorManagerScript.tileSideLength;
 				
 				// The beam is "leaving" the box
 				switch(currentDir) {
@@ -91,7 +114,7 @@ public class LaserDrawer : MonoBehaviour {
 						break;
 				}
 			} else {
-				string currentTile = floorManagerScript.grid[(int)currentPos.x, (int)currentPos.y];
+				string currentTile = floorManagerScript.grid[(int)currentGridPos.x, (int)currentGridPos.y];
 				
 				if(currentTile == "Solid") {
 					break;
@@ -106,8 +129,7 @@ public class LaserDrawer : MonoBehaviour {
 					}
 					currentLongBeams.Add(newBeam);
 					
-					
-					newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
+					newBeam.transform.localPosition = currentLocalPos * floorManagerScript.tileSideLength;
 					
 					if(currentDir == Direction.Up || currentDir == Direction.Down) {
 						newBeam.transform.localRotation = Quaternion.Euler(0, 0, 90);
@@ -124,7 +146,7 @@ public class LaserDrawer : MonoBehaviour {
 					}
 					currentShortBeams.Add(newBeam);
 					
-					newBeam.transform.localPosition = currentPos * floorManagerScript.tileSideLength;
+					newBeam.transform.localPosition = currentLocalPos * floorManagerScript.tileSideLength;
 					
 					// The beam is "entering" the box
 					switch(currentDir) {
@@ -142,19 +164,19 @@ public class LaserDrawer : MonoBehaviour {
 							break;
 					}
 					
-					float boxRotation = floorManagerScript.gridRotation[(int)currentPos.x, (int)currentPos.y];
+					float boxRotation = floorManagerScript.gridRotation[(int)currentGridPos.x, (int)currentGridPos.y];
 					
 					// Now we need to spawn the other beams, if any, and end the function
 					
 					if(currentTile == "Target") {
-						GameObject tileTargetObj = floorManagerScript.gridObjects[(int)currentPos.x, (int)currentPos.y];
+						GameObject tileTargetObj = floorManagerScript.gridObjects[(int)currentGridPos.x, (int)currentGridPos.y];
 						tileTargetObj.GetComponent<ToggleTarget>().AddLaser();
 						targetsReached.Add(tileTargetObj);
 					} else {
 						List<Direction> directionsToSpawn = getOutputDirections(currentDir, currentTile, boxRotation);
 						foreach(Direction dir in directionsToSpawn) {
-							DrawBeam(currentPos, dir, true);
-						}	
+							DrawBeam(currentLocalPos, dir, true);
+						}
 					}
 					
 					break;
@@ -162,13 +184,13 @@ public class LaserDrawer : MonoBehaviour {
 			}
 			
 			if(currentDir == Direction.Up) {
-				currentPos.y += 1f;
+				currentLocalPos.y += 1f;
 			} else if(currentDir == Direction.Down) {
-				currentPos.y -= 1f;
+				currentLocalPos.y -= 1f;
 			} else if(currentDir == Direction.Left) {
-				currentPos.x -= 1f;
+				currentLocalPos.x -= 1f;
 			} else if(currentDir == Direction.Right) {
-				currentPos.x += 1f;
+				currentLocalPos.x += 1f;
 			}
 		}
 	}
