@@ -5,11 +5,11 @@ public class LaserDrawer : MonoBehaviour {
 	
 	public enum Direction {Up, Down, Left, Right};
 	
-	public Vector2 location;
-	public Direction direction;
 	public GameObject longBeam;
 	public GameObject shortBeam;
 	
+	private Vector2 location;
+	private Direction direction;
 	private Transform spawn;
 	
 	private FloorManager floorManagerScript;
@@ -43,7 +43,11 @@ public class LaserDrawer : MonoBehaviour {
 				break;
 		}
 	
-		DrawBeam(Vector2.zero, direction); // not to be called in "Awake", otherwise will mess with the construction of grid
+		DrawBeamFromSpawn(); // not to be called in "Awake", otherwise will mess with the construction of grid
+	}
+	
+	public void DrawBeamFromSpawn() {
+		DrawBeam(Vector2.zero, direction);
 	}
 	
 	public void DrawBeam(Vector2 startPos, Direction startDir, bool startFromBox = false) {

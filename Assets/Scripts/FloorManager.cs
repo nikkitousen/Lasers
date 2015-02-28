@@ -76,7 +76,7 @@ public class FloorManager : MonoBehaviour {
 		currentlySelectedScript.SetSelected(false);
 		
 		foreach(LaserDrawer drawer in laserDrawers) {
-			drawer.DrawBeam(drawer.location, drawer.direction);
+			drawer.DrawBeamFromSpawn();
 		}
 	}
 	
